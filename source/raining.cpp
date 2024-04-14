@@ -24,7 +24,7 @@ int main()
         cin >> s;
         cases.insert(cases.end(), s);
     }
-
+    cout << cases[0] << endl;
     vector<int> results;
     int peak;
     int x;
@@ -48,13 +48,13 @@ int main()
             switch (cases[c].at(x))
             {
             case '/':
-                if (peak >= y)
+                if (peak > y)
                 {
                     while (!flats.empty() && flats.top().second <= y)
                     {
                         pair<int, int> tmp = flats.top();
                         flats.pop();
-                        results[c] += tmp.first;
+                        results[c] += tmp.first * (peak - y);
                     }
                 }
                 results[c] += ((abs(peak - y) - 1) * 2 + 1);

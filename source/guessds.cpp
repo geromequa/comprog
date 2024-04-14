@@ -15,47 +15,49 @@ int main()
     cin.tie(nullptr);
     cout.precision(10);
 
-    cout << "insert 1";
-    cout << "insert 2";
-    cout << "insert 1";
-    cout << "insert 2";
+    cout << "? insert 1" << endl;
+    cout << "? insert 2" << endl;
+    cout << "? insert 1" << endl;
+    cout << "? insert 2" << endl;
+    cout << "? remove" << endl;
     cout.flush();
-    cout << "remove";
     int x;
     cin >> x;
     string y;
     if (x == 1)
     {
+        cout << "? remove" << endl;
+        cout.flush();
         cin >> x;
         if (x == -1)
             return 0;
         if (x == 2)
         {
-            cout << "empty";
+            cout << "? empty" << endl;
             cout.flush();
             cin >> y;
             if (y == "-1")
                 return 0;
             if (y == "yes")
             {
-                cout << "! set";
+                cout << "! set" << endl;
                 return 0;
             }
             else
             {
-                cout << "! queue";
+                cout << "! queue" << endl;
                 return 0;
             }
         }
         else
         {
-            cout << "! pq";
+            cout << "! pq" << endl;
             return 0;
         }
     }
     else
     {
-        cout << "! stack";
+        cout << "! stack" << endl;
         return 0;
     }
 
