@@ -23,7 +23,7 @@ int main()
     cout << "remove";
     int x;
     cin >> x;
-    bool y;
+    string y;
     if (x == 1)
     {
         cin >> x;
@@ -34,25 +34,29 @@ int main()
             cout << "empty";
             cout.flush();
             cin >> y;
-            if (y == -1)
+            if (y == "-1")
                 return 0;
-            if (y)
+            if (y == "yes")
             {
                 cout << "! set";
+                return 0;
             }
             else
             {
                 cout << "! queue";
+                return 0;
             }
         }
         else
         {
             cout << "! pq";
+            return 0;
         }
     }
     else
     {
         cout << "! stack";
+        return 0;
     }
 
     // content
