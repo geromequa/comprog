@@ -17,14 +17,10 @@ int main()
 
     int t;
     cin >> t;
-    vector<string> cases;
-    while (t--)
+    rep(i, t)
     {
-        string s;
-        cin >> s;
-        cases.insert(cases.end(), s);
+        cin >> i;
     }
-
     // content
 
     return 0;
