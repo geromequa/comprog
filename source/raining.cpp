@@ -9,6 +9,39 @@ using namespace std;
 using Graph = vector<vector<int>>;
 using ll = long long;
 
+int calculateWaterVolume(string s)
+{
+    int volume = 0;
+    int x = 0;
+    stack<int> downslopes;
+    rep(i, s.length())
+    {
+        switch (s[i])
+        {
+        case '_':
+            x++;
+            break;
+        case '/':
+            if (!downslopes.empty())
+            {
+                volume += x - downslopes.top();
+                downslopes.pop();
+            }
+            x++;
+            break;
+        case '\\':
+            downslopes.push(x);
+            x++;
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    return volume;
+}
+
 int main()
 {
     ios::sync_with_stdio(false);
@@ -17,89 +50,11 @@ int main()
 
     int t;
     cin >> t;
-    vector<string> cases;
-    rep(input, t)
+    rep(i, t)
     {
         string s;
         cin >> s;
-        cases.insert(cases.end(), s);
+        cout << calculateWaterVolume(s) << endl;
     }
-    cout << cases[0] << endl;
-    vector<int> results;
-    int peak;
-    int x;
-    int y;
-    rep(c, t)
-    {
-        results.insert(results.end(), 0);
-        peak = 0;
-        x = 0;
-        y = 0;
-        priority_queue<pair<int, int>> flats;
-        int length = cases[c].length();
-        while (cases[c].at(x) != '\\')
-        {
-            x++;
-            if (cases[c].at(x) == '/')
-                y++;
-        }
-        while (x < length)
-        {
-            switch (cases[c].at(x))
-            {
-            case '/':
-                if (peak > y)
-                {
-                    while (!flats.empty() && flats.top().second <= y)
-                    {
-                        pair<int, int> tmp = flats.top();
-                        flats.pop();
-                        results[c] += tmp.first * (peak - y);
-                    }
-                }
-                results[c] += ((abs(peak - y) - 1) * 2 + 1);
-                x++;
-                y++;
-                break;
-            case '_':
-            {
-                if (!flats.empty())
-                {
-                    pair<int, int> tmp = flats.top();
-
-                    if (tmp.second == y)
-                    {
-                        tmp.first++;
-                        flats.pop();
-                        flats.push(tmp);
-                    }
-                    else
-                        flats.push({1, y});
-                }
-                else
-                {
-                    flats.push({1, y});
-                }
-                x++;
-                break;
-            }
-            case '\\':
-                if (peak <= y)
-                {
-                    peak = y;
-                    while (!flats.empty())
-                    {
-                        flats.pop();
-                    }
-                }
-                y--;
-                x++;
-            default:
-                break;
-            }
-        }
-    }
-    rep(c, t) cout << results[c] << endl;
-
     return 0;
 }
