@@ -9,22 +9,24 @@ using namespace std;
 using Graph = vector<vector<int>>;
 using ll = long long;
 
-int distributePies(priority_queue<int> households, int p, int h)
+int distributePies(priority_queue<tuple<int, int, int>> households, int p, int h)
 {
     if (h == 1)
-        return (1 + (households.top() - 1) / p);
+        return (1 + (get<0>(households.top()) - 1) / p);
     p -= h;
     rep(i, p)
     {
         if (households.empty())
             return 0;
-        int tmp = households.top();
-        if (tmp == 1)
+        tuple<int, int, int> current = households.top();
+        if (get<0>(current) == 1)
             break;
         households.pop();
-        households.push(1 + ((tmp - 1) / 2));
+        get<2>(current)++;
+        get<0>(current) = 1 + (get<1>(current) - 1) / get<2>(current);
+        households.push(current);
     }
-    return households.top();
+    return get<0>(households.top());
 }
 
 int main()
@@ -37,14 +39,15 @@ int main()
     cin >> t;
     rep(i, t)
     {
+
         int h, p;
         cin >> h >> p;
-        priority_queue<int> households;
+        priority_queue<tuple<int, int, int>> households;
         rep(i, h)
         {
             int tmp;
             cin >> tmp;
-            households.push(tmp);
+            households.push(make_tuple(tmp, tmp, 1));
         }
         cout << distributePies(households, p, h) << endl;
     }
