@@ -13,8 +13,10 @@ int checkStringBalance(vector<pair<int, int>> &asc, vector<pair<int, int>> &desc
 {
     sort(asc.begin(), asc.end());
 
-    sort(desc.begin(), desc.end());
+    sort(desc.rbegin(), desc.rend(), [](pair<int, int> a, pair<int, int> b)
+         { return a.first + a.second < b.first + b.second; });
     int y = 0;
+    int x = 0;
     rep(i, asc.size())
     {
         if (y - asc[i].first < 0)
@@ -27,7 +29,7 @@ int checkStringBalance(vector<pair<int, int>> &asc, vector<pair<int, int>> &desc
             return 0;
         y += desc[i].second;
     }
-    return y == 0;
+    return y + x == 0;
 }
 pair<int, int> parseString(string &s)
 {
@@ -45,8 +47,6 @@ pair<int, int> parseString(string &s)
             current++;
         };
     }
-    if (lowest > 0)
-        lowest = 0;
     return make_pair(abs(lowest), current);
 }
 
