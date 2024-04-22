@@ -9,67 +9,115 @@ using namespace std;
 using Graph = vector<vector<int>>;
 using ll = long long;
 
-vector<int> paintFence(vector<pair<int, int>> jobs, vector<int> colors, int fencesize, int fencestart)
+vector<ll> parseFenceColors(vector<ll> colors, priority_queue<tuple<ll, ll, int, int>, vector<tuple<ll, ll, int, int>>, greater<tuple<ll, ll, int, int>>> jobs)
 {
-    vector<int> fence = vector<int>(fencesize, -1);
-    vector<int> volume = vector<int>(colors.size(), 0);
-    for (int i = jobs.size(); 0 <= i; i--)
+    tuple<ll, ll, int, int> current, tmp;
+    while (!jobs.empty() && get<0>(jobs.top()) == get<1>(jobs.top()))
+        jobs.pop();
+    if (!jobs.empty())
     {
-        for (int j = jobs[i].first - fencestart; j <= jobs[i].second - fencestart - 1; j++)
+        current = jobs.top();
+        jobs.pop();
+    }
+    while (!jobs.empty())
+    {
+        if (get<0>(jobs.top()) == get<1>(jobs.top()))
         {
-            if (fence[j] != -1)
-                continue;
-            fence[j] = colors[i];
+            jobs.pop();
+        }
+        else if (get<0>(jobs.top()) >= get<1>(current))
+        {
+            colors[get<3>(current)] += get<1>(current) - get<0>(current);
+            current = jobs.top();
+            jobs.pop();
+        }
+        else if (get<0>(jobs.top()) != get<0>(current))
+        { // 2 elements with different starting points
+            if (get<2>(jobs.top()) > get<2>(current))
+            {
+                if (get<1>(jobs.top()) < get<1>(current))
+                {
+                    colors[get<3>(current)] += get<0>(jobs.top()) - get<0>(current);
+                    get<0>(current) = get<1>(jobs.top());
+                    jobs.push(current);
+                    current = jobs.top();
+                    jobs.pop();
+                }
+                else
+                {
+                    colors[get<3>(current)] += get<0>(jobs.top()) - get<0>(current);
+                    current = jobs.top();
+                    jobs.pop();
+                }
+            }
+            else
+            {
+                if (get<1>(jobs.top()) <= get<1>(current))
+                {
+                    jobs.pop();
+                }
+                else
+                {
+                    colors[get<3>(current)] += get<0>(jobs.top()) - get<0>(current);
+                    get<0>(current) = get<0>(jobs.top());
+                    tmp = jobs.top();
+                    jobs.pop();
+                    get<0>(tmp) = get<1>(current);
+                    jobs.push(tmp);
+                }
+            }
+        }
+        else
+        { // 2 elements with same starting point
+            if (get<2>(jobs.top()) > get<2>(current))
+            {
+                current = jobs.top();
+                jobs.pop();
+            }
+            else
+            {
+                if (get<1>(jobs.top()) <= get<1>(current))
+                {
+                    jobs.pop();
+                }
+                else
+                {
+                    tmp = jobs.top();
+                    jobs.pop();
+                    get<0>(tmp) = get<1>(current);
+                    jobs.push(tmp);
+                }
+            }
         }
     }
 
-    return fence;
+    colors[get<3>(current)] += get<1>(current) - get<0>(current);
+
+    return colors;
 }
 
 int main()
 {
-
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     cout.precision(10);
 
-    ll fencesize = pow(10.0, 12);
-    int n, m;
-    int min = fencesize, max = 0;
-    cin >> n;
-    cin >> m;
-    vector<pair<int, int>> jobs = vector<pair<int, int>>(m);
-    vector<int> colors = vector<int>(m);
-    int l, r;
-    cin >> l;
-    cin >> r;
-    min = l;
-    max = r;
-    jobs[0] = make_pair(l, r);
-    cin >> colors[0];
-    rep(i, m - 1)
+    int n, m, color;
+    ll l, r;
+    cin >> n >> m;
+
+    priority_queue<tuple<ll, ll, int, int>, vector<tuple<ll, ll, int, int>>, greater<tuple<ll, ll, int, int>>> jobs;
+    for (int i = 0; i < m; i++)
     {
-        int l, r;
-        cin >> l;
-        cin >> r;
-        if (l < min)
-            min = l;
-        if (r > max)
-            max = r;
-        jobs[i + 1] = make_pair(l, r);
-        cin >> colors[i + 1];
+        cin >> l >> r >> color;
+        jobs.push(make_tuple(l, r, i, color));
     }
-    fencesize = max - min + 2;
-    vector<int> fence = paintFence(jobs, colors, fencesize, min);
-    vector<int> volume = vector<int>(n, 0);
-    rep(i, fencesize)
+    vector<ll> colors(n, 0);
+    colors = parseFenceColors(colors, jobs);
+    for (int i = 0; i < n; i++)
     {
-        if (fence[i] != -1)
-            volume[fence[i]]++;
+        cout << colors[i] << endl;
     }
-    rep(i, n)
-    {
-        cout << volume[i] << endl;
-    }
+
     return 0;
 }
