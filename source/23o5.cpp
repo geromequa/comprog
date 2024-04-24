@@ -24,15 +24,16 @@ ll useOperator(int operatorID, ll a, ll b)
 
 string parseNumbers(vector<ll> numbers)
 {
+    sort(all(numbers));
     while (next_permutation(all(numbers)))
     {
-        rep(i, 2)
+        rep(i, 3)
         {
-            rep(j, 2)
+            rep(j, 3)
             {
-                rep(k, 2)
+                rep(k, 3)
                 {
-                    rep(l, 2)
+                    rep(l, 3)
                     {
                         if (useOperator(l, useOperator(k, useOperator(j, useOperator(i, numbers[0], numbers[1]), numbers[2]), numbers[3]), numbers[4]) == 23)
                             return "Possible";
