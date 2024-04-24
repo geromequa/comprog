@@ -20,29 +20,19 @@ int main()
     vector<ll> p(n);
     for (auto &i : p)
         cin >> i;
-    sort(all(p), [](ll a, ll b)
-         { return b < a; });
+    sort(all(p), greater<>());
     ll sum = 0;
     ll i;
-    for (i = 0; i <= n; i++)
+    ll rem = 0;
+    rep(i, n)
     {
-        if (n == 1)
+        rem += p[i] - u;
+        if (rem < 0)
         {
-            return (u > n) ? 0 : 1;
-        }
-        if (!i)
-            continue;
-        if ((sum + p[i - 1]) >= u * i)
-        {
-            sum += p[i - 1];
-        }
-        else
-        {
-            cout << i - 1 << endl;
+            cout << i << endl;
             return 0;
         }
     }
-    cout << i << endl;
-
+    cout << n << endl;
     return 0;
 }
