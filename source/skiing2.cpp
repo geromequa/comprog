@@ -9,6 +9,85 @@ using namespace std;
 using Graph = vector<vector<int>>;
 using ll = long long;
 
+pair<int, int> setBorders(ll r, ll l, ll n)
+{
+    int x, y, z;
+    ll current = (l - r + 1) / 2;
+    cout << "? " << current << " " << current + 1 << endl;
+    cout.flush();
+    cin >> x;
+    cout << "? n 1" << endl;
+    cout.flush();
+    cin >> y;
+    if (y)
+    {
+        cout << "? 1 2" << endl;
+        cout.flush();
+        cin >> z;
+        if (z)
+        {
+            if (x)
+            {
+                cout << "? " << current << " 1" << endl;
+                cout.flush();
+                cin >> z;
+                if (z)
+                {
+                    r = current;
+                }
+                else
+                {
+                    l = current;
+                }
+            }
+            else
+            {
+                r = current;
+            }
+        }
+        else
+        {
+            cout << "! 1" << endl;
+            cout.flush();
+            return {-1, -1};
+        }
+    }
+    else
+    {
+        cout << "? " << n << " " << n - 1 << endl;
+        cout.flush();
+        cin >> z;
+        if (z)
+        {
+            cout << "! " << n << endl;
+            cout.flush();
+            return {-1, -1};
+        }
+        else
+        {
+            if (x)
+            {
+                l = current;
+            }
+            else
+            {
+                cout << "? " << current << " " << n << endl;
+                cout.flush();
+                cin >> z;
+                if (z)
+                {
+                    l = current;
+                }
+                else
+                {
+                    r = current;
+                }
+            }
+        }
+    }
+    return {r, l};
+}
+
 int main()
 {
     ios::sync_with_stdio(false);
@@ -17,29 +96,28 @@ int main()
 
     ll n;
     cin >> n;
-    ll current = (n + 2 - 1) / 2;
-    ll l = 1;
-    ll r = n;
+    ll current;
+    auto [r, l] = setBorders(0, n, n);
     while (true)
     {
-        if (l - r == 1)
+        if (r - l == 1)
         {
-            cout << "! " + current << endl;
+            cout << "! " << l << endl;
+            cout.flush();
             return 0;
         }
-        int d;
-        cout << "? " + current + (current + 1) << endl;
-        cin >> d;
-        if (d)
+        int b;
+        current = (r - l + 1) / 2;
+        cout << "? " << current << " " << current + 1 << endl;
+        cout.flush();
+        cin >> b;
+        if (b)
         {
             r = current;
-            current = (l + r + 1) / 2;
         }
         else
         {
             l = current;
-            current = (l + r + 1) / 2;
         }
     }
-    return 0;
 }
