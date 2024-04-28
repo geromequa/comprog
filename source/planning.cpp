@@ -9,31 +9,29 @@ using namespace std;
 using Graph = vector<vector<int>>;
 using ll = long long;
 
-vector<ll> calculateLongestSequence(vector<ll> &contests, int n)
+ll planning(vector<ll> &contests, int n)
 {
-    vector<ll> dp(n, 1);
+    vector<ll> backward(n, 1);
+    vector<ll> forward(n, 1);
     for (int i = 1; i < n; i++)
     {
-        for (int j = 0; j < i; j++)
+        for (int j = i - 1; j >= 0; j--)
         {
             if (contests[j] < contests[i])
             {
-                dp[i] = max(dp[i], dp[j] + 1);
+                forward[i] = max(forward[i], forward[j] + 1);
+            }
+            if (contests[n - j - 1] < contests[n - i - 1])
+            {
+                backward[n - i - 1] = max(backward[n - i - 1], backward[n - j - 1] + 1);
             }
         }
     }
-    return dp;
-}
 
-ll planning(vector<ll> &contests, int n)
-{
-    vector<ll> asc = calculateLongestSequence(contests, n);
-    reverse(contests.begin(), contests.end());
-    vector<ll> desc = calculateLongestSequence(contests, n);
     ll m = 0;
     for (int i = 0; i < n; i++)
     {
-        m = max(m, asc[i] + desc[n - i] - 1);
+        m = max(m, backward[i] + forward[i]);
     }
     return m;
 }
@@ -51,7 +49,7 @@ int main()
     {
         cin >> i;
     }
-    cout << planning(contests, n) << endl;
+    cout << planning(contests, n) - 1 << endl;
 
     return 0;
 }
