@@ -9,19 +9,65 @@ using namespace std;
 using Graph = vector<vector<int>>;
 using ll = long long;
 
-ll knapsack(ll n, ll M, vector<ll> input)
+ll knapsack(ll n, ll M, vector<ll> &input)
 {
-    vector<ll> dp(n);
-    dp[0] = input[0];
-    for (int i = 1; i < n; i++)
+    sort(all(input));
+    ll sum = 0;
+    ll it = 0;
+    bool x = false;
+    bool y = false;
+    while (it < n)
     {
-        for (int j = 0; j < i; j++)
+        if ((x && input[it] == 1) || input[it] == 2)
         {
-            if (dp[j] + input[i] <= M)
-                dp[i] = max(dp[i], dp[j] + input[i]);
+            y = true;
         }
+        else if (input[it] == 1)
+        {
+            x = true;
+        }
+
+        if (sum + input[it] <= M)
+        {
+            sum += input[it];
+            it++;
+        }
+        else if (M == (sum + 1))
+        {
+            if (input[it] == 2 && x)
+            {
+                it++;
+                sum++;
+                break;
+            }
+            else if (input[it] == 3 && y)
+            {
+                it++;
+                sum++;
+                break;
+            }
+            break;
+        }
+        else if ((M == sum + 2) && input[it] == 3)
+        {
+            if (x)
+            {
+                it++;
+                sum += 2;
+                break;
+            }
+            else if (y)
+            {
+                it++;
+                sum += 1;
+                break;
+            }
+            break;
+        }
+        else
+            break;
     }
-    return *max_element(all(dp));
+    return sum;
 }
 
 int main()
