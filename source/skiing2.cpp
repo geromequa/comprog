@@ -9,7 +9,7 @@ using namespace std;
 using Graph = vector<vector<int>>;
 using ll = long long;
 
-pair<int, int> setBorders(ll r, ll l, ll n)
+pair<int, int> setBorders(ll r, ll l, ll n) // check if statements
 {
     int x, y, z;
     ll current = (l - r + 1) / 2;
@@ -88,7 +88,7 @@ pair<int, int> setBorders(ll r, ll l, ll n)
     return {r, l};
 }
 
-int main()
+int main() // check left right
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
@@ -100,7 +100,7 @@ int main()
     auto [r, l] = setBorders(0, n, n);
     while (true)
     {
-        if (r - l == 1)
+        if (r - l == 1) // search last 100 linearly to avoid 1 by errors
         {
             cout << "! " << l << endl;
             cout.flush();
