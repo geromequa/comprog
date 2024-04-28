@@ -15,9 +15,10 @@ int main()
     cin.tie(nullptr);
     cout.precision(10);
 
-    int t;
+    ll t;
     cin >> t;
-    rep(i, t)
+    vector<ll> input(t);
+    for (auto &i : input)
     {
         cin >> i;
     }
