@@ -9,20 +9,20 @@ using namespace std;
 using Graph = vector<vector<int>>;
 using ll = long long;
 
+const int MOD = 998244353;
+
 ll numArrangements(ll n, ll p)
 {
     vector<vector<ll>> dp(n + 1, vector<ll>(p + 1, 0));
     dp[0][0] = 1;
-
-    for (int i = 1; i <= n; ++i)
+    for (int i = 1; i <= n; i++)
     {
-        for (int j = 1; j <= i; ++j)
+        for (int j = 1; j <= p; j++)
         {
-            dp[i][j] = (dp[i - 1][j - 1] + j * dp[i - 1][j]);
+            dp[i][j] = (dp[i - 1][j - 1] + (dp[i - 1][j] * j)) % MOD;
         }
     }
-
-    return dp[n][p] % 998244353;
+    return dp[n][p];
 }
 
 int main()
