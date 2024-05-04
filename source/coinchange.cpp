@@ -1,59 +1,53 @@
-
 #include <bits/stdc++.h>
 
-#define rep(a, b) for (int a = 0; a < (b); ++a)
+#define rep(a, b) for (ll a = 0; a < (b); ++a)
 #define all(a) (a).begin(), (a).end()
 #define endl '\n'
 
 using namespace std;
-using Graph = vector<vector<int>>;
 using ll = long long;
-
-ll minCoins(ll debt, vector<ll> &coins)
-{
-    ll MAX = 11;
-    ll coinSum = 0;
-    for (auto &coin : coins)
-        coinSum += coin;
-    vector<ll> dp(2 * coinSum + 1, MAX);
-    dp[debt] = 0;
-
-    for (int coin : coins)
-    {
-
-        for (ll i = coin - 1; i <= 2 * coinSum; i++)
-        {
-            dp[i] = min(dp[i], dp[i - coin] + 1);
-        }
-        for (ll i = 0; i <= 2 * coinSum - coin; i++)
-        {
-            dp[i] = min(dp[i], dp[i + coin] + 1);
-        }
-    }
-
-    return dp[coinSum + debt];
-}
 
 int main()
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     cout.precision(10);
-
-    ll t;
-    cin >> t;
-    rep(i, t)
+    ll n;
+    cin >> n;
+    for (ll i = 0; i < n; i++)
     {
-        ll X, C;
-        cin >> X >> C;
-        vector<ll> input(C);
-        for (auto &i : input)
+        ll v, m;
+        cin >> v >> m;   // v = value; m = num coins
+        vector<ll> c(m); // coins
+        for (ll j = 0; j < m; j++)
+            cin >> c[j];
+        ll dp_l = v + c[m - 1] * c[m - 1] + 1;
+        vector<ll> dp(dp_l, 0);
+        // init
+        for (ll j = 0; j < m; j++)
+            dp[c[j]] = 1;
+        // dp step
+        for (ll j = 1; j < dp_l; j++)
         {
-            cin >> i;
+            if (dp[j] == 1)
+                continue;
+            ll min_a = dp[j - 1] + 1;
+            for (ll l = 1; l < m; l++)
+            {
+                if (c[l] > j)
+                    break;
+                min_a = dp[j - c[l]] + 1 < min_a ? dp[j - c[l]] + 1 : min_a;
+            }
+            dp[j] = min_a;
         }
-        cout << minCoins(X, input) << endl;
+        // change
+        for (ll j = v; j < dp_l; j++)
+        {
+            if (dp[j] + dp[j - v] < dp[v])
+                dp[v] = dp[j] + dp[j - v];
+        }
+        cout << dp[v] << endl;
     }
-    // content
-
+    cout.flush();
     return 0;
 }

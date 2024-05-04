@@ -1,111 +1,88 @@
 
 #include <bits/stdc++.h>
 
-#define rep(a, b) for (int a = 0; a < (b); ++a)
-#define all(a) (a).begin(), (a).end()
-#define endl '\n'
+#define rep(a, b)   for(int a = 0; a < (b); ++a)
+#define all(a)      (a).begin(),(a).end()
+#define endl        '\n'
 
 using namespace std;
 using Graph = vector<vector<int>>;
 using ll = long long;
 
-ll knapsack(ll n, ll M, vector<int> &input)
-{
-    vector<ll> dp(n, 0);
-
-    for (ll i = 0; i < n; i++)
-    {
-        dp[i] = input[i];
-    }
-    for (ll i = 1; i < n; i++)
-    {
-        for (ll j = i - 1; j >= 0; j--)
-        {
-            if (input[i] + dp[j] <= M)
-            {
-                dp[i] = max(dp[i], input[i] + dp[j]);
-            }
-        }
-    }
-    return *max_element(all(dp));
-}
-
-int main()
-{
+int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     cout.precision(10);
 
-    ll n, M;
-    cin >> n >> M;
-    vector<int> input(n);
-    for (auto &x : input)
-    {
-        cin >> x;
+
+    int n, size;
+    cin >> n >> size;
+    vector<int> items = vector<int>(n);
+    int ones = 0, twos = 0, threes = 0;
+    for (int i=0; i < n; i++) {
+        cin >> items[i];
+        switch (items[i]) {
+            case 1:
+                ones++;
+                break;
+            case 2:
+                twos++;
+                break;
+            case 3:
+                threes++;
+                break;
+            default:
+                cout << "Some wrong value";
+                exit(1);
+        }
     }
-    cout << knapsack(n, M, input) << endl;
-    // content
+
+    int sum;
+    if (3 * threes < size) {
+        sum = 3 * threes;
+    } else {
+        sum = (size / 3) * 3;
+    }
+
+    
+    if (2 * twos < size - sum) {
+        sum += 2 * twos;
+    } else {
+        sum += ((size-sum) / 2) * 2;
+    }
+
+    if (ones < size - sum) {
+        sum += ones;
+    } else {
+        sum = size;
+    }
+
+    int sum2;
+    if (threes >= 1) {
+        if (3 * threes < size) {
+            sum2 = 3 * threes;
+        } else {
+            sum2 = (size / 3) * 3;
+        }
+        sum2 -= 3;
+    }
+
+
+    
+    if (2 * twos < size - sum2) {
+        sum2 += 2 * twos;
+    } else {
+        sum2 += ((size - sum2) / 2) * 2;
+    }
+
+    if (ones < size - sum2) {
+        sum2 += ones;
+    } else {
+        sum2 = size;
+    }
+
+    cout << max(sum, sum2) << endl;
 
     return 0;
 }
 
-// ll knapsack(ll n, ll M, vector<ll> &input)
-//{
-//     sort(all(input));
-//     ll sum = 0;
-//     ll it = 0;
-//     bool x = false;
-//     bool y = false;
-//     while (it < n)
-//     {
-//         if ((x && input[it] == 1) || input[it] == 2)
-//         {
-//             y = true;
-//         }
-//         else if (input[it] == 1)
-//         {
-//             x = true;
-//         }
-//
-//         if (sum + input[it] <= M)
-//         {
-//             sum += input[it];
-//             it++;
-//         }
-//         else if (M == (sum + 1))
-//         {
-//             if (input[it] == 2 && x)
-//             {
-//                 it++;
-//                 sum++;
-//                 break;
-//             }
-//             else if (input[it] == 3 && y)
-//             {
-//                 it++;
-//                 sum++;
-//                 break;
-//             }
-//             break;
-//         }
-//         else if ((M == sum + 2) && input[it] == 3)
-//         {
-//             if (x)
-//             {
-//                 it++;
-//                 sum += 2;
-//                 break;
-//             }
-//             else if (y)
-//             {
-//                 it++;
-//                 sum += 1;
-//                 break;
-//             }
-//             break;
-//         }
-//         else
-//             break;
-//     }
-//     return sum;
-// }
