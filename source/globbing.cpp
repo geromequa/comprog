@@ -9,82 +9,81 @@ using namespace std;
 using Graph = vector<vector<int>>;
 using ll = long long;
 
-string checkPattern(string s, string p)
+string checkPattern(string p, string s, int m, int n)
 {
-    if (p[0] == '*' || p[0] == '+')
+
+    if (m - 1 > n)
     {
-        int j = p.size() - 1;
-        for (int i = s.size() - 1; i >= 0; i--)
-        {
-            if (s[i] == s[j])
-            {
-                j--;
-                continue;
-            }
-            else if (p[j] == '*')
-            {
-                return "YES";
-            }
-            else if (p[j] == '+')
-            {
-                if (s.size() - 1 - i > 0)
-                {
-                    return "YES";
-                }
-                else
-                    return "NO";
-            }
-            else
-                return "NO";
-        }
+        return "NO";
     }
-    else
+    int i = 0;
+    if (!(p[0] == '*' || p[0] == '+'))
     {
-        for (int i = 0; i < s.size(); i++)
+        for (i = 0; i < min(m, n); i++)
         {
-            if (s[i] == p[i])
+            if (p[i] == s[i])
             {
                 continue;
             }
             else if (p[i] == '*')
             {
-                if (p.size() == i + 1)
-                {
+                if (i == m - 1)
                     return "YES";
-                }
-                else
-                    break;
+                break;
             }
             else if (p[i] == '+')
             {
-                if (p.size() == i + 1 && s.size() > i + 1)
+                if (i == m - 1)
                 {
-                    return "YES";
+                    if (i + 2 <= n)
+                    {
+                        return "YES";
+                    }
+                    else
+                    {
+                        return "NO";
+                    }
                 }
                 else
+                {
                     break;
-            }
-            else
-            {
-                return "NO";
+                }
             }
         }
-        int j = p.size() - 1;
-        for (int i = s.size() - 1; i >= 0; i--)
+    }
+    int j = p.size() - 1;
+    for (int k = 0; k < min(m, n); k++)
+    {
+        if (p[j] == s[n - 1 - k])
         {
-            if (s[i] == p[j])
-            {
-                j--;
-                continue;
-            }
-            else if (p[j] == '*' || p[j] == '+')
+            j--;
+            continue;
+        }
+        else if (p[j] == '*')
+        {
+            return "YES";
+        }
+        else if (p[j] == '+')
+        {
+            if (n - j - i > 0)
             {
                 return "YES";
             }
             else
+            {
                 return "NO";
+            }
+        }
+        else
+        {
+            return "NO";
         }
     }
+    if (m == n)
+    {
+        return "YES";
+    }
+    return "NO";
 }
 int main()
 {
@@ -100,7 +99,9 @@ int main()
         string s, p;
         getline(cin, p);
         getline(cin, s);
-        cout << checkPattern(s, p) << endl;
+        int m = p.size();
+        int n = s.size();
+        cout << checkPattern(p, s, m, n) << endl;
     }
 
     return 0;

@@ -9,33 +9,48 @@ using namespace std;
 using Graph = vector<vector<int>>;
 using ll = long long;
 
-struct TrieNode {
+struct TrieNode
+{
     bool isEndOfWord;
-    unordered_map<char, TrieNode*> children;
+    unordered_map<char, TrieNode *> children;
 };
 
-TrieNode* getNode() {
-    TrieNode* node = new TrieNode;
+TrieNode *getNode()
+{
+    TrieNode *node = new TrieNode;
     node->isEndOfWord = false;
     return node;
 }
 
-void insert(TrieNode* root, string key) {
-    TrieNode* current = root;
-    for (int i = 0; i < key.length(); i++) {
+void insert(TrieNode *root, string key)
+{
+    TrieNode *current = root;
+    for (int i = 0; i < key.length(); i++)
+    {
+        if (current->children['*'])
+        {
+            break;
+        }
         char index = key[i];
         if (!current->children[index])
+        {
             current->children[index] = getNode();
+        }
         current = current->children[index];
-        if (key[i+1] == '*')
+        if (i + 1 < key.length() && key[i + 1] == '*')
+        {
             current->isEndOfWord = true;
+            current->children.clear();
+        }
     }
     current->isEndOfWord = true;
 }
 
-bool search(TrieNode* root, string key) {
-    TrieNode* current = root;
-    for (int i = 0; i < key.length(); i++) {
+bool search(TrieNode *root, string key)
+{
+    TrieNode *current = root;
+    for (int i = 0; i < key.length(); i++)
+    {
         char index = key[i];
         if (current->children['*'])
             return true;
@@ -46,21 +61,24 @@ bool search(TrieNode* root, string key) {
     return (current != NULL && current->isEndOfWord);
 }
 
-int main() {
+int main()
+{
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     cout.precision(10);
 
     int n, m;
     cin >> n;
-    TrieNode* root = getNode();
-    rep (i,n) {
+    TrieNode *root = getNode();
+    rep(i, n)
+    {
         string ip;
         cin >> ip;
         insert(root, ip);
     }
     cin >> m;
-    rep(i,m) {
+    rep(i, m)
+    {
         string ip;
         cin >> ip;
         cout << (search(root, ip) ? "Yes" : "No") << '\n';
