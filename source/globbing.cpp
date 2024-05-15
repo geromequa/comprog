@@ -9,63 +9,36 @@ using namespace std;
 using Graph = vector<vector<int>>;
 using ll = long long;
 
-string checkPattern(string p, string s, int m, int n)
+string match(string p, string s)
 {
+    int m = p.size(), n = s.size();
+    int p1 = 0;
+    int p2 = m - 1;
+    int s1 = 0;
+    int s2 = n - 1;
 
-    if (m - 1 > n)
+    while (p[p1] != '*' && p[p1] != '+' && p1 < m && s1 < n)
     {
-        return "NO";
-    }
-    int i = 0;
-    if (!(p[0] == '*' || p[0] == '+'))
-    {
-        for (i = 0; i < min(m, n); i++)
+        if (p[p1] != s[s1])
         {
-            if (p[i] == s[i])
-            {
-                continue;
-            }
-            else if (p[i] == '*')
-            {
-                if (i == m - 1)
-                    return "YES";
-                break;
-            }
-            else if (p[i] == '+')
-            {
-                if (i == m - 1)
-                {
-                    if (i + 2 <= n)
-                    {
-                        return "YES";
-                    }
-                    else
-                    {
-                        return "NO";
-                    }
-                }
-                else
-                {
-                    break;
-                }
-            }
+            return "NO";
         }
+        p1++;
+        s1++;
     }
-    int j = p.size() - 1;
-    for (int k = 0; k < min(m, n); k++)
+    if (p[p1] == '*')
     {
-        if (p[j] == s[n - 1 - k])
-        {
-            j--;
-            continue;
-        }
-        else if (p[j] == '*')
+        if (p1 == m - 1)
         {
             return "YES";
         }
-        else if (p[j] == '+')
+        s1--;
+    }
+    if (p[p1] == '+')
+    {
+        if (p1 == m - 1)
         {
-            if (n - j - i > 0)
+            if (s1 < n)
             {
                 return "YES";
             }
@@ -73,6 +46,27 @@ string checkPattern(string p, string s, int m, int n)
             {
                 return "NO";
             }
+        }
+    }
+    while (p[p2] != '*' && p[p2] != '+' && p2 > p1 && s2 > s1)
+    {
+        if (p[p2] != s[s2])
+        {
+            return "NO";
+        }
+        p2--;
+        s2--;
+    }
+    if (p[p2] == '*')
+    {
+        return "YES";
+    }
+    if (p[p2] == '+')
+    {
+        s2++;
+        if (s2 - s1 > 0)
+        {
+            return "YES";
         }
         else
         {
@@ -85,6 +79,74 @@ string checkPattern(string p, string s, int m, int n)
     }
     return "NO";
 }
+// string match(string p, string s)
+//{
+//     int m = p.size(), n = s.size();
+//     int i = 0, j = 0;
+//     vector<int> marked(s.size(), 0);
+//     while (i < m && j < n && p[i] != '*' && p[i] != '+')
+//     {
+//         if (p[i] != s[j] || marked[j])
+//         {
+//             return "NO";
+//         }
+//         marked[j] = 1;
+//         i++;
+//         j++;
+//     }
+//
+//     if (p[i] == '+')
+//     {
+//         if (i == m - 1)
+//         {
+//             if (j < n)
+//             {
+//                 return "YES";
+//             }
+//             else
+//             {
+//                 return "NO";
+//             }
+//         }
+//     }
+//
+//     if (i == m - 1 && p[i] == '*')
+//     {
+//         return "YES";
+//     }
+//
+//     i = m - 1;
+//     int k = 0;
+//     while (i >= 0 && k < n && p[i] != '*' && p[i] != '+')
+//     {
+//         if (p[i] != s[n - k - 1] || marked[n - k - 1])
+//         {
+//             return "NO";
+//         }
+//         marked[n - k - 1] = 1;
+//         i--;
+//         k++;
+//     }
+//
+//     if (p[i] == '+')
+//     {
+//         if (n - k - j > 0)
+//         {
+//             return "YES";
+//         }
+//         else
+//         {
+//             return "NO";
+//         }
+//     }
+//     if (n == m || p[i] == '*')
+//     {
+//         return "YES";
+//     }
+//
+//     return "NO";
+// }
+
 int main()
 {
     ios::sync_with_stdio(false);
@@ -99,9 +161,7 @@ int main()
         string s, p;
         getline(cin, p);
         getline(cin, s);
-        int m = p.size();
-        int n = s.size();
-        cout << checkPattern(p, s, m, n) << endl;
+        cout << match(p, s) << endl;
     }
 
     return 0;

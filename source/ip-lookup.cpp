@@ -12,13 +12,17 @@ using ll = long long;
 struct TrieNode
 {
     bool isEndOfWord;
-    unordered_map<char, TrieNode *> children;
+    TrieNode *children[3]; // Fixed size array for binary alphabet
 };
 
 TrieNode *getNode()
 {
     TrieNode *node = new TrieNode;
     node->isEndOfWord = false;
+    // Initialize children to nullptr
+    for (int i = 0; i < 3; i++)
+        node->children[i] = nullptr;
+
     return node;
 }
 
@@ -27,20 +31,20 @@ void insert(TrieNode *root, string key)
     TrieNode *current = root;
     for (int i = 0; i < key.length(); i++)
     {
-        if (current->children['*'])
+        int index = (key[i] == '*' ? 2 : key[i] - '0');
+        if (current->children[2])
         {
-            break;
+            current->isEndOfWord = true;
+            return;
         }
-        char index = key[i];
         if (!current->children[index])
         {
             current->children[index] = getNode();
         }
         current = current->children[index];
-        if (i + 1 < key.length() && key[i + 1] == '*')
+        if (key[i + 1] == '*')
         {
             current->isEndOfWord = true;
-            current->children.clear();
         }
     }
     current->isEndOfWord = true;
@@ -51,9 +55,11 @@ bool search(TrieNode *root, string key)
     TrieNode *current = root;
     for (int i = 0; i < key.length(); i++)
     {
-        char index = key[i];
-        if (current->children['*'])
+        int index = (key[i] == '*' ? 2 : key[i] - '0');
+        if (current->children[2])
+        {
             return true;
+        }
         if (!current->children[index])
             return false;
         current = current->children[index];
@@ -81,7 +87,7 @@ int main()
     {
         string ip;
         cin >> ip;
-        cout << (search(root, ip) ? "Yes" : "No") << '\n';
+        cout << (search(root, ip) ? "Yes" : "No") << endl;
     }
     return 0;
 }
