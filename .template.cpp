@@ -6,8 +6,8 @@
 #define endl '\n'
 
 using namespace std;
-using Graph = vector<vector<int>>;
 using ll = long long;
+using Graph = vector<vector<ll>>;
 
 int main()
 {
@@ -17,6 +17,7 @@ int main()
 
     ll t;
     cin >> t;
+
     vector<ll> input(t);
     for (auto &i : input)
     {
