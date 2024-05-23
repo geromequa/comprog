@@ -1,7 +1,6 @@
-
 #include <bits/stdc++.h>
 
-#define rep(a, b) for (int a = 0; a < (b); ++a)
+#define rep(a, b) for (ll a = 0; a < (b); ++a)
 #define all(a) (a).begin(), (a).end()
 #define endl '\n'
 
@@ -23,7 +22,6 @@ int main()
     {
         cin >> i;
     }
-    // content
 
     return 0;
 }
