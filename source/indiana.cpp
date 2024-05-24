@@ -29,7 +29,38 @@ bool dfs(ll v, vector<bool> &visited, Graph &G)
 
 void indiana(Graph &G)
 {
-    // TODO implement topSort
+    ll n = G.size();
+    vector<ll> in(n, 0);
+    for (ll i = 0; i < n; i++)
+    {
+        for (ll j : G[i])
+        {
+            in[j]++;
+        }
+    }
+    queue<ll> q;
+    for (ll i = 0; i < n; i++)
+    {
+        if (in[i] == 0)
+        {
+            q.push(i);
+        }
+    }
+    while (!q.empty())
+    {
+        ll v = q.front();
+        q.pop();
+        cout << v + 1 << " ";
+        for (ll u : G[v])
+        {
+            in[u]--;
+            if (in[u] == 0)
+            {
+                q.push(u);
+            }
+        }
+    }
+    cout << endl;
 }
 
 int main()
@@ -42,15 +73,15 @@ int main()
     cin >> t;
     rep(i, t)
     {
+        bool connected = true;
         ll n, h;
         cin >> n >> h;
         Graph G(n);
-        bool connected = true;
         rep(j, h)
         {
-            int a, b;
+            ll a, b;
             cin >> a >> b;
-            G[a].push_back(b);
+            G[a - 1].push_back(b - 1);
         }
         vector<bool> visited(n, false);
         if (!dfs(0, visited, G))
