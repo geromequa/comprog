@@ -26,3 +26,7 @@ add_executable(frenzy frenzy.cpp)
 add_executable(shoal shoal.cpp)
 add_executable(party party.cpp)
 add_executable(indiana indiana.cpp)
+add_executable(tutel tutel.cpp)
+add_executable(area50 area50.cpp)
+add_executable(parcelparadox parcelparadox.cpp)
+
