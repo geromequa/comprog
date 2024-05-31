@@ -30,3 +30,5 @@ add_executable(tutel tutel.cpp)
 add_executable(area50 area50.cpp)
 add_executable(parcelparadox parcelparadox.cpp)
 
+add_executable(boxing boxing.cpp)
+add_executable(storerun storerun.cpp)

@@ -1,4 +1,3 @@
-
 #include <bits/stdc++.h>
 
 #define rep(a, b) for (int a = 0; a < (b); ++a)
@@ -6,61 +5,32 @@
 #define endl '\n'
 
 using namespace std;
+using Graph = vector<vector<int>>;
 using ll = long long;
-using Graph = vector<vector<ll>>;
 
-bool dfs(ll v, vector<bool> &visited, Graph &G)
-{
-    visited[v] = true;
-    for (ll u : G[v])
-    {
-        if (!visited[u])
-        {
-            dfs(u, visited, G);
-        }
-        else
-        {
-            cout << "recheck hints" << endl;
-            return false;
-        }
-    }
-    return true;
-}
+Graph graph;
+vector<int> permanent_visited;
+vector<int> temporary_visited;
+vector<int> order;
+int loop = 0;
 
-void indiana(Graph &G)
+void dfs(int v)
 {
-    ll n = G.size();
-    vector<ll> in(n, 0);
-    for (ll i = 0; i < n; i++)
+    if (permanent_visited[v])
+        return;
+    if (temporary_visited[v])
     {
-        for (ll j : G[i])
-        {
-            in[j]++;
-        }
+        loop = 1;
+        return;
     }
-    queue<ll> q;
-    for (ll i = 0; i < n; i++)
+    temporary_visited[v] = 1;
+    for (auto &u : graph[v])
     {
-        if (in[i] == 0)
-        {
-            q.push(i);
-        }
+        dfs(u);
     }
-    while (!q.empty())
-    {
-        ll v = q.front();
-        q.pop();
-        cout << v + 1 << " ";
-        for (ll u : G[v])
-        {
-            in[u]--;
-            if (in[u] == 0)
-            {
-                q.push(u);
-            }
-        }
-    }
-    cout << endl;
+    temporary_visited[v] = 0;
+    permanent_visited[v] = 1;
+    order.push_back(v);
 }
 
 int main()
@@ -69,38 +39,65 @@ int main()
     cin.tie(nullptr);
     cout.precision(10);
 
-    ll t;
+    int t;
     cin >> t;
+
     rep(i, t)
     {
-        bool connected = true;
-        ll n, h;
-        cin >> n >> h;
-        Graph G(n);
-        rep(j, h)
+        int n, g;
+        cin >> n >> g;
+
+        graph = Graph(n);
+        rep(j, g)
         {
-            ll a, b;
+            int a, b;
             cin >> a >> b;
-            G[a - 1].push_back(b - 1);
+            graph[a - 1].push_back(b - 1);
         }
-        vector<bool> visited(n, false);
-        if (!dfs(0, visited, G))
+
+        permanent_visited = vector(n, 0);
+        temporary_visited = vector(n, 0);
+        loop = 0;
+        order = vector(0, 0);
+
+        rep(j, n)
         {
+            dfs(j);
+        }
+
+        if (loop)
+        {
+            cout << "recheck hints" << endl;
             continue;
         }
-        for (bool v : visited)
+
+        auto normalorder = order;
+
+        permanent_visited = vector(n, 0);
+        temporary_visited = vector(n, 0);
+        loop = 0;
+        order = vector(0, 0);
+
+        for (auto &v : graph)
+            reverse(all(v));
+
+        for (int j = n - 1; j >= 0; j--)
         {
-            if (!v)
-            {
-                cout << "missing hints" << endl;
-                connected = false;
-                break;
-            }
+            dfs(j);
         }
-        if (connected)
+
+        if (normalorder != order)
         {
-            indiana(G);
+            cout << "missing hints" << endl;
+            continue;
         }
+
+        for (auto i = n - 1; i >= 0; i--)
+        {
+            cout << order[i] + 1 << " ";
+        }
+        cout << endl;
     }
+
     return 0;
 }
