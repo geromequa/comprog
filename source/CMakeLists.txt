@@ -32,3 +32,4 @@ add_executable(parcelparadox parcelparadox.cpp)
 
 add_executable(boxing boxing.cpp)
 add_executable(storerun storerun.cpp)
+add_executable(icecream icecream.cpp)
