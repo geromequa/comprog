@@ -1,101 +1,69 @@
 #include <bits/stdc++.h>
 
-#define rep(a, b) for (ll a = 0; a < (b); ++a)
-#define all(a) (a).begin(), (a).end()
-#define endl '\n'
+#define rep(a, b)   for(int a = 0; a < (b); ++a)
+#define all(a)      (a).begin(),(a).end()
+#define endl        '\n'
+
+
+struct Track {
+    int to, weight;
+};
 
 using namespace std;
+using Graph = vector<vector<Track>>;
 using ll = long long;
-using Graph = vector<vector<ll>>;
-using P = pair<ll, ll>;
-using weighted_graph = vector<vector<P>>;
 
-struct UnionFind
-{
-    vector<ll> par, siz;
-    UnionFind(ll n) : par(n), siz(n, 1)
-    {
-        rep(i, n) par[i] = i;
-    }
 
-    ll root(ll x)
-    {
-        if (par[x] == x)
-            return x;
-        else
-            return par[x] = root(par[x]);
-    }
-
-    bool unite(ll x, ll y)
-    {
-        x = root(x);
-        y = root(y);
-        if (x == y)
-            return false;
-        if (siz[x] < siz[y])
-            swap(x, y);
-        siz[x] += siz[y];
-        par[y] = x;
-        return true;
-    }
-
-    bool same(ll x, ll y)
-    {
-        return root(x) == root(y);
-    }
-
-    ll size(ll x)
-    {
-        return siz[root(x)];
-    }
-};
-
-auto comp = [](const tuple<ll, ll, ll> &a, const tuple<ll, ll, ll> &b)
-{
-    return get<2>(a) > get<2>(b);
-};
-
-ll icecream(priority_queue<tuple<ll, ll, ll>, vector<tuple<ll, ll, ll>>, decltype(&comp)> q, ll n)
-{
-    ll cost = 0;
-    UnionFind uf(n + 1);
-    while (uf.size(0) != n + 1)
-    {
-        auto [a, b, p] = q.top();
-        q.pop();
-        if (uf.same(a, b))
-        {
-            continue;
-        }
-        uf.unite(a, b);
-        cost += p;
-    }
-    return cost;
-}
-
-int main()
-{
+int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     cout.precision(10);
 
-    ll n, m;
-    cin >> n >> m;
 
-    priority_queue<tuple<ll, ll, ll>, vector<tuple<ll, ll, ll>>, decltype(comp)> q(comp);
-    rep(i, n)
-    {
-        ll a;
-        cin >> a;
-        q.push(make_tuple(i, n, a));
-    }
-    rep(i, m)
-    {
-        ll a, b, p;
-        cin >> a >> b >> p;
-        q.push(make_tuple(a, b, p));
-    }
-    cout << icecream(q, n) << endl;
+    int nRooms, nConnections;
+    cin >> nRooms >> nConnections;
 
+    Graph graph(nRooms+1);
+
+    for (int i = 1; i<=nRooms; i++) {
+        int cost;
+        cin >> cost;
+        graph[0].push_back({i,cost});
+        graph[i].push_back({0,cost});
+    }
+
+    for (int i = 0; i < nConnections; i++) {
+        int from, ton, weight;
+        cin >> from >> ton >> weight;
+        graph[from+1].push_back({ton+1,weight});
+        graph[ton+1].push_back({from+1,weight});
+    }
+
+    struct comparator{
+        bool operator()(const Track a, const Track b) const { return a.weight>b.weight;}
+    };
+
+    priority_queue<Track, vector<Track>, comparator> q;
+    vector<int> selectedRooms = vector(nRooms+1,0);
+    ll totalCost = 0;
+    for (auto track : graph[0]) {
+        q.emplace(track);
+    }
+    selectedRooms[0] = 1;
+
+    while (!q.empty()) {
+        Track top = q.top();
+        q.pop();
+        if (selectedRooms[top.to]) {
+
+            continue;
+        }
+        totalCost += top.weight;
+        selectedRooms[top.to] = 1;
+        for (auto track: graph[top.to]) {
+            q.emplace(track);
+        }
+    }
+    cout << totalCost << endl;
     return 0;
 }
