@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 #include <math.h>
+#include <limits.h>
 
 #define rep(a, b) for (ll a = 0; a < (b); ++a)
 #define all(a) (a).begin(), (a).end()
@@ -7,16 +8,16 @@
 
 using namespace std;
 using ll = long long;
+using P = pair<ll, ll>;
 using Graph = vector<vector<ll>>;
-using weighted_graph = vector<vector<ll, ll>>;
-const ll INF = 1e9;
+using weighted_graph = vector<vector<P>>;
+const ll INF = LLONG_MAX;
 
-vector<ll> dijkstra(const weighted_graph &g, ll start)
+vector<ll> dijkstra(const weighted_graph &g, ll start, ll n)
 {
-    ll n = g.size();
     vector<ll> dist(n, INF);
     dist[start] = 0;
-    priority_queue<pair<ll, ll>, vector<pair<ll, ll>>, greater<pair<ll, ll>>> pq;
+    priority_queue<P, vector<P>, greater<P>> pq;
     pq.push(make_pair(0, start));
 
     while (!pq.empty())
@@ -28,7 +29,7 @@ vector<ll> dijkstra(const weighted_graph &g, ll start)
         if (d_v != dist[v])
             continue;
 
-        for (auto [to, len] : g[v])
+        for (auto &[to, len] : g[v])
         {
             if (dist[v] + len < dist[to])
             {
@@ -50,7 +51,7 @@ int main()
     ll n, m;
     cin >> n;
 
-    vector<pair<ll, ll>> input(n);
+    vector<P> input(n);
     rep(i, n)
     {
         ll d, c;
@@ -64,13 +65,13 @@ int main()
         ll a, b, weight;
         cin >> a >> b;
         weight = pow(abs(input[a - 1].first - input[b - 1].first), 2) + pow(abs(input[a - 1].second - input[b - 1].second), 2);
-        g.emplace_back(a - 1, b - 1, weight);
-        g.emplace_back(b - 1, a - 1, weight);
+        g[b - 1].emplace_back(a - 1, weight);
+        g[a - 1].emplace_back(b - 1, weight);
     }
     vector<vector<ll>> dist(n, vector<ll>(n, INF));
     rep(i, n)
     {
-        dist[i] = dijkstra(g, i);
+        dist[i] = dijkstra(g, i, n);
     }
     ll q;
     cin >> q;
