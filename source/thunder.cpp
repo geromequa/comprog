@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <limits.h>
 
 #define rep(a, b) for (int a = 0; a < (b); ++a)
 #define all(a) (a).begin(), (a).end()
@@ -7,9 +8,9 @@
 using namespace std;
 using ll = long long;
 using Graph = vector<vector<int>>;
-const int INF = 1e9;
+const double INF = DBL_MAX;
 
-void floyd_warshall(vector<vector<int>> &g, int n)
+void floyd_warshall(vector<vector<double>> &g, int n)
 {
     for (int k = 0; k < n; ++k)
     {
@@ -43,7 +44,7 @@ int main()
             cin >> x >> y;
             towns[j] = make_pair(x, y);
         }
-        vector<vector<int>> result(n, vector<int>(n, INF));
+        vector<vector<double>> result(n, vector<double>(n, INF));
         rep(j, n)
         {
             rep(k, n)
@@ -57,7 +58,7 @@ int main()
         }
         floyd_warshall(result, n);
         bool impossible = false;
-        int max_dist = 0;
+        double max_dist = 0;
         rep(j, n)
         {
             if (impossible)
@@ -81,6 +82,7 @@ int main()
         }
         if (!impossible)
         {
+            cout << setprecision(4) << fixed;
             cout << max_dist << endl;
         }
     }
