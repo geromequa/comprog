@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <limits.h>
 
 #define rep(a, b) for (ll a = 0; a < (b); ++a)
 #define all(a) (a).begin(), (a).end()
@@ -7,7 +8,7 @@
 using namespace std;
 using ll = long long;
 using Graph = vector<vector<ll>>;
-const ll INF = 1e9;
+const ll INF = LLONG_MAX;
 using edge = pair<ll, pair<ll, ll>>; // destination, weight, id
 using weighted_graph = vector<vector<edge>>;
 
