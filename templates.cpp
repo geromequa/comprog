@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <limits.h>
 
 #define rep(a, b) for (ll a = 0; a < (b); ++a)
 #define all(a) (a).begin(), (a).end()
@@ -8,7 +9,7 @@ using namespace std;
 using ll = long long;
 using Graph = vector<vector<ll>>;
 using weighted_graph = vector<vector<ll, ll>>; // pair of to and len
-const ll INF = 1e9;
+const ll INF = LLONG_MAX;
 
 // knuth morris pratt algorithm
 vector<ll> computePrefix(string pattern)
