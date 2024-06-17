@@ -1,65 +1,61 @@
 #include <bits/stdc++.h>
+#include <limits.h>
 
 #define rep(a, b) for (int a = 0; a < (b); ++a)
 #define all(a) (a).begin(), (a).end()
 #define endl '\n'
 
-struct Edge
-{
-    int to, flow;
-    Edge *rev;
-};
-
 using namespace std;
-using Graph = vector<vector<Edge *>>;
 using ll = long long;
+using P = pair<ll, ll>;
+using Graph = vector<vector<ll>>; // value is capacity of edge (0 means no edge)
 
-int bfs(Graph &g, int &s, int &t, vector<Edge *> &parent)
+ll bfs(Graph &g, ll s, ll t, vector<ll> &parent, ll n)
 {
-    fill(all(parent), nullptr);
-    parent[s] = new Edge{0, 0, nullptr};
-    queue<pair<int, int>> q;
-    q.push({s, INT_MAX});
-
+    queue<ll> q;
+    vector<bool> visited(n, false);
+    parent[s] = -1;
+    visited[s] = true;
+    q.push(s);
+    ll min_cap = LLONG_MAX;
     while (!q.empty())
     {
-        int cur = q.front().first;
-        int flow = q.front().second;
+        ll u = q.front();
         q.pop();
-
-        for (Edge *next : g[cur])
+        for (ll i = 0; i < n; i++)
         {
-            if (!parent[next->to] && next->flow)
+            if (g[u][i] > 0 && !visited[i])
             {
-                parent[next->to] = next; //???
-                int new_flow = min(flow, next->flow);
-                if (next->to == t)
-                    return new_flow;
-                q.push({next->to, new_flow});
+                visited[i] = true;
+                parent[i] = u;
+                min_cap = min(min_cap, g[u][i]);
+                q.push(i);
+                if (i == t)
+                {
+                    return min_cap;
+                }
             }
         }
     }
     return 0;
 }
 
-ll maxflow(Graph g, int s, int t)
+ll max_flow(Graph &g, ll s, ll t, ll n)
 {
+    vector<ll> parent(n);
+    Graph residual = g;
     ll flow = 0;
-    vector<Edge *> prevEdge(g.size(), nullptr);
-    int new_flow;
-
-    while ((new_flow = bfs(g, s, t, prevEdge)))
+    ll path_flow = 0;
+    while (path_flow = bfs(residual, s, t, parent, n))
     {
-        flow += new_flow;
-        int cur = t;
-        while (cur != s)
+        for (ll v = t; v != s; v = parent[v])
         {
-            prevEdge[cur]->flow -= new_flow;
-            prevEdge[cur]->rev->flow += new_flow;
-            cur = prevEdge[cur]->rev->to;
+            ll u = parent[v];
+            residual[u][v] -= path_flow;
+            residual[v][u] += path_flow;
         }
+        flow += path_flow;
     }
-
     return flow;
 }
 
@@ -69,30 +65,18 @@ int main()
     cin.tie(nullptr);
     cout.precision(10);
 
-    int n, m;
+    ll n, m;
     cin >> n >> m;
 
-    Graph g(n);
+    Graph g(n, vector<ll>(n, 0));
     rep(i, m)
     {
-        int a, b, c;
+        ll a, b, c;
         cin >> a >> b >> c;
-        a--;
-        b--;
-        Edge *e = new Edge();
-        Edge *r = new Edge();
-        e->to = b;
-        e->flow = c;
-        e->rev = r;
-        r->to = a;
-        r->flow = c;
-        r->rev = e;
-        g[a].push_back(e);
-        g[b].push_back(r);
+        g[a - 1][b - 1] += c;
+        g[b - 1][a - 1] += c;
     }
-
-    ll flow = maxflow(g, 0, 1);
-    cout << flow << endl;
+    cout << max_flow(g, 0, 1, n) << endl;
 
     return 0;
 }
