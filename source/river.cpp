@@ -8,7 +8,8 @@
 using namespace std;
 using ll = long long;
 using P = pair<ll, ll>;
-using Graph = vector<vector<ll, ll>>; // value is capacity of edge (0 means no edge)
+using Graph = vector<vector<ll>>; // value is capacity of edge (0 means no edge)
+const ll INF = LLONG_MAX;
 
 ll bfs(Graph &g, ll s, ll t, vector<ll> &parent, ll n)
 {
@@ -22,17 +23,15 @@ ll bfs(Graph &g, ll s, ll t, vector<ll> &parent, ll n)
     {
         ll u = q.front();
         q.pop();
-        for (auto x : g[u])
+        for (ll i = 0; i < n; i++)
         {
-            ll to = x.first;
-            ll cap = x.second;
-            if (cap > 0 && !visited[to])
+            if (g[u][i] > 0 && !visited[i])
             {
-                visited[to] = true;
-                parent[to] = u;
-                min_cap = min(min_cap, cap);
-                q.push(to);
-                if (to == t)
+                visited[i] = true;
+                parent[i] = u;
+                min_cap = min(min_cap, g[u][i]);
+                q.push(i);
+                if (i == t)
                 {
                     return min_cap;
                 }
@@ -53,14 +52,8 @@ ll max_flow(Graph &g, ll s, ll t, ll n)
         for (ll v = t; v != s; v = parent[v])
         {
             ll u = parent[v];
-            for (auto [to, cap] : g[u])
-            {
-                if (to == v)
-                {
-                    cap -= path_flow;
-                    cap += path_flow;
-                }
-            }
+            residual[u][v] -= path_flow;
+            residual[v][u] += path_flow;
         }
         flow += path_flow;
     }
@@ -73,18 +66,26 @@ int main()
     cin.tie(nullptr);
     cout.precision(10);
 
-    ll n, m;
-    cin >> n >> m;
+    ll w, l;
+    cin >> w >> l;
 
-    Graph g(n);
-    rep(i, m)
+    Graph g(w * 2, vector<ll>(w * 2, 0)); // even nodes are start and odd nodes are end vertices for given vertex
+    for (ll i = 0; i < (w - 1) * 2; i += 2)
     {
-        ll a, b, c;
-        cin >> a >> b >> c;
-        g[a - 1].push_back((b - 1, c));
-        g[b - 1].push_back((a - 1, c));
+        ll cap;
+        cin >> cap;
+        g[i][i + 1] = cap;
     }
-    cout << max_flow(g, 0, 1, n) << endl;
+    g[0][1] = 100;
+    g[w * 2 - 2][w * 2 - 1] = 100;
+    for (ll i = 1; i < (w - 1) * 2; i += 2)
+    {
+        for (ll j = i + 1; j < min((i + l * 2), w * 2 - 1); j += 2)
+        {
+            g[i][j] = 100;
+        }
+    }
+    cout << max_flow(g, 0, w * 2 - 1, w * 2) << endl;
 
     return 0;
 }
