@@ -8,6 +8,17 @@ using namespace std;
 using ll = long long;
 using Graph = vector<vector<ll>>;
 
+ll multiply(ll a, ll b)
+{
+    if (b == 1)
+        return a;
+
+    ll res = multiply(a + a, b / 2);
+    if (b % 2 == 1)
+        res += a;
+    return res;
+}
+
 int main()
 {
     ios::sync_with_stdio(false);
