@@ -6,6 +6,7 @@
 
 using namespace std;
 using ll = long long;
+using ld = long double;
 using Graph = vector<vector<ll>>;
 
 int main()
@@ -19,10 +20,10 @@ int main()
 
     rep(i, t)
     {
-        ll x1, y1, r1, x2, y2, r2;
+        ld x1, y1, r1, x2, y2, r2;
         cin >> x1 >> y1 >> r1;
         cin >> x2 >> y2 >> r2;
-        ll d = sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+        ld d = sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 
         if (d > (r1 + r2) || d < abs(r1 - r2))
         {
@@ -31,6 +32,11 @@ int main()
         }
         if (d == 0 && r1 == r2)
         {
+            if (r1 == 0)
+            {
+                cout << 1 << endl;
+                continue;
+            }
             cout << "oo" << endl;
             continue;
         }
