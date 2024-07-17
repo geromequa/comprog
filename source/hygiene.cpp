@@ -1,113 +1,93 @@
-#include <bits/stdc++.h>
-
-#define rep(a, b) for (ll a = 0; a < (b); ++a)
-#define all(a) (a).begin(), (a).end()
-#define endl '\n'
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <limits>
 
 using namespace std;
 using ll = long long;
-using Graph = vector<vector<ll>>;
-using P = pair<ll, ll>;
 
-bool compareX(const P &p1, const P &p2)
+struct point
 {
-    return p1.first < p2.first;
-}
-
-bool compareY(const P &p1, const P &p2)
-{
-    return p1.second < p2.second;
-}
-
-double distance(const P &p1, const P &p2)
-{
-    return sqrt((p2.first - p1.first) * (p2.first - p1.first) + (p2.second - p1.second) * (p2.second - p1.second));
-}
-
-// All points in strip[] are sorted according to y coordinate. They all have an upper bound on minimum distance as d.
-double stripClosest(vector<P> &strip, double d)
-{
-    double minDist = d;
-    ll size = strip.size();
-
-    for (ll i = 0; i < size; ++i)
+    ll x;
+    ll y;
+    point operator-(const point& other) const
     {
-        for (ll j = i + 1; j < size && (strip[j].second - strip[i].second) < minDist; ++j)
+        return point{x - other.x, y - other.y};
+    };
+    bool operator==(const point& other) const
+    {
+        return x == other.x && y == other.y;
+    }
+};
+
+ll squared_len(const point& a)
+{
+    return a.x * a.x + a.y * a.y;
+}
+
+ll squared_dist(const point& a, const point& b)
+{
+    return squared_len(a - b);
+}
+
+ll squared_min_dist(vector<point>& x_sorted, vector<point>& y_sorted)
+{
+    if (x_sorted.size() <= 4)
+    {
+        ll min_dist = numeric_limits<ll>::max();
+        for (int i = 0; i < x_sorted.size(); i++)
         {
-            double dist = distance(strip[i], strip[j]);
-            if (dist < minDist)
+            for (int j = i + 1; j < x_sorted.size(); j++)
             {
-                minDist = dist;
+                min_dist = min(min_dist, squared_dist(x_sorted[i], x_sorted[j]));
             }
         }
+        return min_dist;
     }
-
-    return minDist;
-}
-
-// Points are sorted by x-coordinate.
-double closestUtil(vector<P> &points, vector<P> &temp, ll left, ll right)
-{
-    if (right - left <= 3)
-    {
-        double minDist = numeric_limits<double>::infinity();
-        for (ll i = left; i < right; ++i)
-        {
-            for (ll j = i + 1; j < right; ++j)
-            {
-                double dist = distance(points[i], points[j]);
-                if (dist < minDist)
-                {
-                    minDist = dist;
-                }
-            }
-        }
-        return minDist;
+    vector<point> l,r, ly, ry;
+    ll mid = x_sorted.size() / 2;
+    for (int i = 0; i < mid; i++) l.push_back(x_sorted[i]);
+    for (int i = mid; i < x_sorted.size(); i++) r.push_back(x_sorted[i]);
+    for (auto p : y_sorted) {
+        if (p.x <= l.back().x) ly.push_back(p);
+        else ry.push_back(p);
     }
-
-    ll mid = left + (right - left) / 2;
-    P midPoint = points[mid];
-
-    double dl = closestUtil(points, temp, left, mid);
-    double dr = closestUtil(points, temp, mid, right);
-
-    double d = min(dl, dr);
-
-    temp.clear();
-    for (ll i = left; i < right; ++i)
+    ll min_dist = min(squared_min_dist(l, ly), squared_min_dist(r, ry));
+    ll mid_x = x_sorted[mid].x;
+    vector<point> strip;
+    for (auto p : y_sorted)
     {
-        if (abs(points[i].first - midPoint.first) < d)
+        if (mid_x - min_dist <= p.x && p.x <= mid_x + min_dist) {strip.push_back(p);}
+    }
+    for (int i = 0; i < strip.size(); i++)
+    {
+        for (int j = i + 1; j < min(i + 16, (int)strip.size()); j++)
         {
-            temp.push_back(points[i]);
+            min_dist = min(min_dist, squared_dist(strip[i], strip[j]));
         }
     }
-
-    return min(d, stripClosest(temp, d));
+    return min_dist;
 }
 
-double closest(vector<P> &points)
-{
-    ll n = points.size();
-    vector<P> temp(n);
-    sort(points.begin(), points.end(), compareX);
-    return closestUtil(points, temp, 0, n);
-}
 
-int main()
+int main(void)
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
-    cout.precision(10);
 
-    ll n;
-    cin >> n;
-
-    vector<P> points(n);
-    for (auto &[x, y] : points)
+    ll num_points;
+    cin >> num_points;
+    vector<point> x_sorted, y_sorted;
+    for (int i = 0; i < num_points; i++)
     {
-        cin >> x >> y;
+        point p;
+        cin >> p.x >> p.y;
+        x_sorted.push_back(p);
+        y_sorted.push_back(p);
     }
-    cout << pow(closest(points), 2) << endl;
+    sort(x_sorted.begin(), x_sorted.end(), [](const point &a, const point &b) {return a.x < b.x;});
+    sort(y_sorted.begin(), y_sorted.end(), [](const point &a, const point &b) {return a.y < b.y;});
+    cout << squared_min_dist(x_sorted, y_sorted);
 
     return 0;
 }
