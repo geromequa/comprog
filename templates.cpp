@@ -7,9 +7,121 @@
 
 using namespace std;
 using ll = long long;
+using ld = long double;
 using Graph = vector<vector<ll>>;
 using weighted_graph = vector<vector<ll, ll>>; // pair of to and len
 const ll INF = LLONG_MAX;
+
+struct point // for geometry
+{
+    ll x;
+    ll y;
+    point operator-(const point &other) const
+    {
+        return point{x - other.x, y - other.y};
+    };
+    point operator+(const point &other) const
+    {
+        return point{x + other.x, y + other.y};
+    }
+    point operator*(const ll scale)
+    {
+        return point{scale * x, scale * y};
+    }
+    bool operator==(const point &other) const
+    {
+        return x == other.x && y == other.y;
+    }
+    // dot product = cos(alpha) unit
+    ll operator*(const point &other) const
+    {
+        return x * other.x + y * other.y;
+    }
+    // cross product = sin(alpha) unit
+    ll operator%(const point &other) const
+    {
+        return x * other.y - y * other.x;
+    }
+    bool operator<(const point &other) const
+    {
+        if (x != other.x)
+            return x < other.x;
+        return y < other.y;
+    }
+};
+
+// Sorting Points via x or y coordinate
+// vector<point> x_sorted, y_sorted;
+// sort(x_sorted.begin(), x_sorted.end(), [](const point &a, const point &b) {return a.x < b.x;});
+// sort(y_sorted.begin(), y_sorted.end(), [](const point &a, const point &b) {return a.y < b.y;});
+
+ll squared_len(const point &a)
+{
+    return a.x * a.x + a.y * a.y;
+}
+
+ll squared_dist(const point &a, const point &b)
+{
+    return squared_len(a - b);
+}
+
+ll squared_min_dist(vector<point> &x_sorted, vector<point> &y_sorted)
+{
+    if (x_sorted.size() <= 4)
+    {
+        ll min_dist = numeric_limits<ll>::max();
+        for (int i = 0; i < x_sorted.size(); i++)
+        {
+            for (int j = i + 1; j < x_sorted.size(); j++)
+            {
+                min_dist = min(min_dist, squared_dist(x_sorted[i], x_sorted[j]));
+            }
+        }
+        return min_dist;
+    }
+    vector<point> l, r, ly, ry;
+    ll mid = x_sorted.size() / 2;
+    for (int i = 0; i < mid; i++)
+        l.push_back(x_sorted[i]);
+    for (int i = mid; i < x_sorted.size(); i++)
+        r.push_back(x_sorted[i]);
+    for (auto p : y_sorted)
+    {
+        if (p.x <= l.back().x)
+            ly.push_back(p);
+        else
+            ry.push_back(p);
+    }
+    ll min_dist = min(squared_min_dist(l, ly), squared_min_dist(r, ry));
+    ll mid_x = x_sorted[mid].x;
+    vector<point> strip;
+    for (auto p : y_sorted)
+    {
+        if (mid_x - min_dist <= p.x && p.x <= mid_x + min_dist)
+        {
+            strip.push_back(p);
+        }
+    }
+    for (int i = 0; i < strip.size(); i++)
+    {
+        for (int j = i + 1; j < min(i + 16, (int)strip.size()); j++)
+        {
+            min_dist = min(min_dist, squared_dist(strip[i], strip[j]));
+        }
+    }
+    return min_dist;
+}
+
+double distanceFromLineSegment(point s, point e, point p)
+{ // start of line, end of line, point
+    // Calculate coefficients A, B, C of the line equation Ax + By + C = 0
+    double A = e.y - s.y;
+    double B = s.x - e.x;
+    double C = e.x * s.y - s.x * e.y;
+    // Calculate the distance from the point to the line
+    double distance = std::abs(A * p.x + B * p.y + C) / std::sqrt(A * A + B * B);
+    return distance;
+}
 
 // knuth morris pratt algorithm
 vector<ll> computePrefix(string pattern)
