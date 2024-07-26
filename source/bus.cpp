@@ -1,12 +1,10 @@
 #include <bits/stdc++.h>
 
 #define rep(a, b) for (ll a = 0; a < (b); ++a)
-#define all(a) (a).begin(), (a).end()
 #define endl '\n'
 
 using namespace std;
 using ll = long long;
-using Graph = vector<vector<ll>>;
 
 int main()
 {
@@ -16,16 +14,36 @@ int main()
 
     ll n, q;
     cin >> n >> q;
-    vector<ll> inverters(n);
+    vector<uint64_t> inverters(n);
     rep(i, n)
     {
         cin >> hex >> inverters[i];
     }
 
+    vector<uint64_t> prefix(n + 1, 0);
+    for (ll i = 1; i <= n; ++i)
+    {
+        prefix[i] = prefix[i - 1] ^ inverters[i - 1];
+    }
+
     while (q--)
     {
         ll s, r;
-        cin >> s >> r;
+        cin >> dec >> s >> r;
+        s--;
+        r--;
+
+        uint64_t xor_pattern;
+        if (s <= r)
+        {
+            xor_pattern = prefix[r] ^ prefix[s];
+        }
+        else
+        {
+            xor_pattern = (prefix[n] ^ prefix[s]) ^ prefix[r];
+        }
+
+        cout << xor_pattern << endl;
     }
 
     return 0;

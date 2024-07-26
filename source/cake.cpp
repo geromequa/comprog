@@ -1,61 +1,77 @@
 #include <bits/stdc++.h>
-#include <limits.h>
-
 #define rep(a, b) for (ll a = 0; a < (b); ++a)
 #define all(a) (a).begin(), (a).end()
 #define endl '\n'
 
 using namespace std;
 using ll = long long;
-using Graph = vector<vector<ll>>;
-using weighted_graph = vector<vector<ll, ll>>; // pair of to and len
+
 const ll INF = LLONG_MAX;
 
-ll gcd(ll a, ll b)
+class SegmentTree
 {
-    return b == 0 ? a : gcd(b, a % b);
-}
+public:
+    SegmentTree(const vector<ll> &data) : n(data.size())
+    {
+        tree.resize(2 * n);
+        build(data);
+    }
 
-void build(vector<ll> &a, ll v, ll tl, ll tr, vector<ll> &t)
-{
-    if (tl == tr)
+    void update(ll index, ll value)
     {
-        t[v] = a[tl];
+        index += n;
+        tree[index] -= value;
+        while (index > 1)
+        {
+            index /= 2;
+            tree[index] = gcd(tree[2 * index], tree[2 * index + 1]);
+        }
     }
-    else
-    {
-        ll tm = (tl + tr) / 2;
-        build(a, v * 2, tl, tm, t);
-        build(a, v * 2 + 1, tm + 1, tr, t);
-        t[v] = gcd(t[v * 2], t[v * 2 + 1]);
-    }
-}
 
-ll query(ll v, ll tl, ll tr, ll l, ll r, vector<ll> &t)
-{
-    if (l == tl && r == tr)
-        return t[v];
-    ll tm = (tl + tr) / 2;
-    return gcd(query(v * 2, tl, tm, l, min(r, tm), t),
-               query(v * 2 + 1, tm + 1, tr, max(l, tm + 1), r, t));
-}
+    ll query(ll left, ll right)
+    {
+        left += n;
+        right += n;
+        ll result = 0;
+        while (left <= right)
+        {
+            if (left % 2 == 1)
+                result = gcd(result, tree[left++]);
+            if (right % 2 == 0)
+                result = gcd(result, tree[right--]);
+            left /= 2;
+            right /= 2;
+        }
+        return result;
+    }
 
-void update(ll v, ll tl, ll tr, ll pos, ll new_val, vector<ll> &t)
-{
-    if (tl == tr)
+private:
+    ll n;
+    vector<ll> tree;
+
+    void build(const vector<ll> &data)
     {
-        t[v] -= new_val;
+        for (ll i = 0; i < n; ++i)
+        {
+            tree[n + i] = data[i];
+        }
+        for (ll i = n - 1; i > 0; --i)
+        {
+            tree[i] = gcd(tree[2 * i], tree[2 * i + 1]);
+        }
     }
-    else
+
+    ll gcd(ll a, ll b)
     {
-        ll tm = (tl + tr) / 2;
-        if (pos <= tm)
-            update(v * 2, tl, tm, pos, new_val, t);
-        else
-            update(v * 2 + 1, tm + 1, tr, pos, new_val, t);
-        t[v] = gcd(t[v * 2], t[v * 2 + 1]);
+        while (b)
+        {
+            ll temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
     }
-}
+};
 
 int main()
 {
@@ -70,8 +86,8 @@ int main()
     {
         cin >> a[i];
     }
-    vector<ll> t(4 * n);
-    build(a, 1, 0, n - 1, t);
+
+    SegmentTree segTree(a);
 
     while (q--)
     {
@@ -81,14 +97,17 @@ int main()
         {
             ll l, r;
             cin >> l >> r;
-            cout << query(1, 0, n - 1, l - 1, r - 1, t) << endl;
+            --l;
+            --r;
+            cout << segTree.query(l, r) << endl;
         }
         else if (type == '!')
         {
-            ll pos, val;
-            string tutor;
-            cin >> tutor >> val >> pos;
-            update(1, 0, n - 1, pos - 1, val, t);
+            string name;
+            ll i, x;
+            cin >> name >> i >> x;
+            --i;
+            segTree.update(i, x);
         }
     }
 
