@@ -12,8 +12,8 @@ using P = pair<ll, ll>;
 
 struct point // for geometry
 {
-    ll x;
-    ll y;
+    ld x;
+    ld y;
     point operator-(const point &other) const
     {
         return point{x - other.x, y - other.y};
@@ -49,7 +49,7 @@ struct point // for geometry
 };
 struct circle : point
 {
-    double r;
+    ld r;
 };
 int main()
 {
